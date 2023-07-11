@@ -1,0 +1,42 @@
+<script>
+    window.addEventListener('DOMContentLoaded', (event) => {
+        // Nombre de résultats
+        var nombreResultats = 42; // Remplacez par votre nombre de résultats réel
+        document.getElementById('nombre-resultats').textContent = nombreResultats;
+        
+        // Temps de recherche en secondes
+        var tempsRecherche = 3.5; // Remplacez par votre temps de recherche réel
+        document.getElementById('temps-recherche').textContent = tempsRecherche;
+    });
+  </script>
+  
+  
+  
+<div class="row d-flex justify-content-center con" style="margin-top: 100px;">
+    
+    <div class="col-md-9">
+       <h1 style="color:rgb(19, 102, 132); margin-bottom: 30px;"> Liste des rapports de veille juridique</h1> 
+       
+       <div class="card p-4 mt-3">
+   
+ 
+      
+  
+      <div class="result">
+          <h2 class="title">Rapport de veille du 05/23</h2>
+          <i class="far fa-eye"></i> <a (click)="viewDocument()" class="btn" data-placement="top" data-original-title="View Document">
+           Visualiser document
+          </a>
+          
+     
+      </div>
+  
+    </div>
+  
+
+  
+  
+      
+      <!-- Ajoutez d'autres résultats ici -->
+  
+  

@@ -1,0 +1,266 @@
+
+
+  
+  
+     <div class="container" id="main-container">
+     
+<h2> Contrat CNDP</h2>
+      <img src="assets/222.png" height="800"alt="hhhhhSello"  />
+
+        
+  
+  
+
+  <!-- Add Document Modal -->
+  <div class="modal fade" id="addDocumentModal" tabindex="-1" role="dialog" aria-labelledby="addDocumentModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addDocumentModalLabel">Add Document</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            
+            <form #addForm="ngForm" (ngSubmit)="onAddDocument(addForm, departementSelect, categorieSelect,fileInput) " enctype="multipart/form-data">
+    
+     
+    
+              <div class="form-group">
+                  <label for="name">Nom du contrat </label>
+                  <input type="text" ngModel name="nom" class="form-control" id="nom" placeholder="Nom" required>
+              </div>
+         
+  
+              <div class="form-group">
+                <label for="id">Reference du contrat </label>
+                <input type="text" ngModel name="id" class="form-control" id="id" placeholder="id" required>
+            </div>
+  
+  
+              <div class="form-group">
+                  <label for="metadonnes">Description</label>
+                  <input type="text" ngModel name="metadonnes" class="form-control" id="metadonnes" placeholder="metadonnes" >
+              </div>
+         
+         
+             
+         
+              <div class="form-group">
+                  <label for="id">Departement Name</label>
+                  <select name="id" #departementSelect>
+                      <option *ngFor="let departement of departements" [value]="departement.id">
+                          {{departement.nom}}
+                      </option>
+                  </select>
+              </div>
+  
+
+
+              
+              <div class="form-group">
+                <label for="">Partie Contractante</label>
+                <select name="">
+                    <option  >
+                       ALSA ALBAIDA
+                    </option>
+                    <option  >
+                        ALSA City AGADIR
+                     </option>
+                     <option  >
+                        GAT
+                     </option>
+                     <option  >
+                       IVAM
+                     </option>
+                     <option  >
+                        Alsa Khouribga
+                      </option>
+                </select>
+            </div>
+
+
+
+            <div class="form-group">
+                <label for="Fournisseur">Fournisseur</label>
+                <input type="text" ngModel name="metadonnes" class="form-control" id="metadonnes" placeholder="Founisseur" >
+            </div>
+  
+              <div class="form-group">
+                <label for="id">Categorie Name</label>
+                <select name="id" #categorieSelect>
+                    <option *ngFor="let categorie of categories" [value]="categorie.id">
+                        {{categorie.nom}}
+                    </option>
+                </select>
+            </div>
+       
+  
+         
+            <div class="form-group">
+              <label for="file" >Upload Fichier</label>
+              <input type="file" #fileInput class="form-control-file" id="content" required>
+            </div>
+  
+            
+              <div class="modal-footer">
+                  <button type="button" id="add-User-form" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button [disabled]="addForm.invalid" type="submit" class="btn btn-primary">Save changes</button>
+              </div>
+          </form>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+          
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  
+    <div class="modal fade" id="updateDocumentModal" tabindex="-1" role="dialog" aria-labelledby="documentEditModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="updateDocumentModalLabel">Edit document {{editDocument?.nom}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form #editForm="ngForm">
+          <div class="form-group">
+            <label for="name">Nom</label>
+            <input type="text" ngModel="{{editDocument?.nom}}" name="nom" class="form-control" id="nameChange" aria-describedby="emailHelp" placeholder="nom">
+          </div>
+          <input type="hidden" ngModel="{{editDocument?.id}}" name="id" class="form-control" id="id" placeholder="ID">
+          <input type="hidden" ngModel="{{editDocument?.createdBy}}" name="createdBy" class="form-control" id="createdBy" placeholder="createdBy">
+          <input type="hidden" ngModel="{{editDocument?.modifiedBy}}" name="modifiedBy" class="form-control" id="modifiedBy" placeholder="createdBy">
+          <input type="hidden" ngModel="{{editDocument?.dateCreation}}" name="dateCreation" class="form-control" id="dateCreation" placeholder="dateCreation">
+          <input type="hidden" ngModel="{{editDocument?.dateModification}}" name="dateModification" class="form-control" id="dateModification" placeholder="dateModification">
+      
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea ngModel="{{editDocument?.metadonnes}}" name="metadonnes" class="form-control" id="metadonnes" aria-describedby="emailHelp" placeholder="metadonnes">{{editDocument?.metadonnes}}</textarea>
+          </div>
+      
+  
+  
+          <div class="form-group">
+            <label for="departement">Département: {{ editDocument?.departement?.nom }}</label>
+            <select name="departement" [(ngModel)]="selectedDepartementId">
+               <option *ngFor="let departement of departements" [value]="departement.id">
+                 {{ departement.nom }}
+               </option>
+             </select>
+             
+          </div>
+  
+  
+  
+  
+          <div class="form-group">
+            <label for="categorie">categorie: {{ editDocument?.categorie?.nom }}</label>
+            <select name="categorie" [(ngModel)]="selectedCategorieId">
+               <option *ngFor="let categorie of categories" [value]="categorie.id">
+                 {{ categorie.nom }}
+               </option>
+             </select>
+             
+          </div>
+  
+  
+          <div class="form-group">
+            <label for="Contenu du contrat">Contenu du contrat</label>
+            <a (click)="editDocument!.id && viewDocument(editDocument!.id)" class="btn" data-placement="top" data-original-title="View Document">
+            <i class="far fa-eye"></i>
+            </a>
+            
+          </div>
+  
+  
+          <div class="form-group">
+            <label for="file" >Upload Fichier</label>
+            <input type="file" #fileInput class="form-control-file" id="content" required>
+          </div>
+  
+  
+      
+          <div class="modal-footer">
+            <button type="button" id="" data-dismiss="modal" class="btn btn-secondary">Close</button>
+            <button (click)="onUpdateDocument(editForm.value)" data-dismiss="modal" class="btn btn-primary">Save changes</button>
+          </div>
+          </form>
+        </div>
+        </div>
+      </div>
+      </div>
+    </div>  
+  
+    
+    
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteDocumentModal" tabindex="-1" role="dialog" aria-labelledby="deleteModelLabel" aria-hidden="true">
+     <div class="modal-dialog" role="document">
+        <div class="modal-content">
+           <div class="modal-header">
+              <h5 class="modal-title" id="deleteModelLabel">Delete Document</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+              </button>
+           </div>
+           <div class="modal-body">
+              <p>Êtes-vous sûr de la suppression du département ?<b>{{deleteDocument?.nom}} </b> ?</p>
+              <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                 <button (click)="onDeleteDocument(deleteDocument?.id)" class="btn btn-danger" data-dismiss="modal">Yes</button>
+              </div>
+           </div>
+        </div>
+     </div>
+    </div>
+       
+    <!-- Notification for no Documents -->
+    <div *ngIf="documents?.length == 0" class="col-lg-12 col-md-12 col-xl-12">
+    <div class="alert alert-info" role="alert">
+     <h4 class="alert-heading">NO DocumentS!</h4>
+     <p>No Documents were found.</p>
+    </div>
+    </div>
+    
+    

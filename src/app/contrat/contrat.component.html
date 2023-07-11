@@ -1,0 +1,350 @@
+
+<div class="collapse navbar-collapse" id="navbarColor02" style="margin-top: 20px;">
+  <ul class="navbar-nav mr-auto">
+    <form class="form-inline my-2 my-lg-0">
+     <span style="margin-right: 800px;">
+      <input  type="search" (ngModelChange)="searchContratss(key.value)" #key="ngModel" ngModel name="key" 
+      id="searchName" class="form-control mr-sm-2" placeholder="Filter contrats..." required>
+     </span>
+  
+  </form>
+  </ul>
+
+  <ul class="navbar-nav ml-auto">
+    <li class="nav-item">
+      <button class="bbt btn btn-primary" (click)="onOpenModal(null, 'add')">Ajouter Contrat</button>
+    </li>
+  </ul>
+
+</div>
+
+
+   <div class="container" id="main-container" style="margin-left: 20px;">
+   
+      
+          <table class="table">
+            <thead>
+              <tr>
+                <th> ID</th>
+             
+                <th>Nom</th>
+                <th>Cree par</th>
+            
+                <th>Departement</th>
+             
+                <th>Date Debut</th>
+                <th>Date D'echance</th>
+                <th>Partie Contractante</th>
+                <th>Fournisseur</th>
+  
+                <th colspan="4" class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody *ngFor="let contrat of contrats" >
+              <tr >
+               
+  
+                <td>{{contrat?.id}}</td>
+
+      <td>          
+        <a
+        routerLink="/suivicontrat" routerLinkActive="active" ariaCurrentWhenActive="page"
+          
+           >
+        {{contrat?.nom}}
+       
+          
+        </a> </td> 
+            
+                
+                <td>{{contrat?.createdBy?.nom}}</td>
+            
+          
+                <td>{{contrat?.departement?.nom}}</td>
+       
+                <td> {{contrat?.dateDebut}} </td>
+                <td> {{contrat?.dateEchance}}</td>
+                <td> {{contrat?.partieContractante}}</td>
+                <td> {{contrat?.fournisseur}} </td>
+               
+                <td>
+                  <a (click)="onOpenModal(contrat, 'edit')" class="btn " data-placement="top" data-original-title="Edit">
+                    <i class="fa fa-pencil"></i> Edit
+                  </a>
+                </td>
+                <td>
+                  <a (click)="onOpenModal(contrat, 'delete')" class=" btn " data-placement="top" data-original-title="Delete">
+                    <i class="fa fa-times"></i> Delete
+                  </a>
+                </td>
+
+                <td>
+                  <a (click)="DownloadContrat(contrat.id)" class="btn " data-placement="top" data-original-title="View Contrat">
+                    <i class="fas fa-download"></i>
+                  </a>
+                </td>
+                <td>
+                  <a (click)="viewContrat(contrat.id)" class="btn" data-placement="top" data-original-title="View Contrat">
+                    <i class="far fa-eye"></i>
+                  </a>
+                </td>
+
+              </tr>
+            </tbody>
+          </table>
+
+
+<!-- Add Contrat Modal -->
+<div class="modal fade" id="addContratModal" tabindex="-1" role="dialog" aria-labelledby="addContratModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="contrat">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addContratModalLabel">Add Contrat</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          
+          <form #addForm="ngForm" (ngSubmit)="onAddContrat(addForm, departementSelect, categorieSelect,fileInput) " enctype="multipart/form-data">
+  
+   
+  
+            <div class="form-group">
+                <label for="name">Nom du contrat </label>
+                <input type="text" ngModel name="nom" class="form-control" id="nom" placeholder="Nom" required>
+            </div>
+       
+
+            <div class="form-group">
+              <label for="id">Reference du contrat </label>
+              <input type="text" ngModel name="id" class="form-control" id="id" placeholder="id" required>
+          </div>
+
+
+            <div class="form-group">
+                <label for="metadonnes">Description</label>
+                <input type="text" ngModel name="metadonnes" class="form-control" id="metadonnes" placeholder="metadonnes" >
+            </div>
+       
+       
+           
+       
+            <div class="form-group">
+                <label for="id">Departement Name</label>
+                <select name="id" #departementSelect>
+                    <option *ngFor="let departement of departements" [value]="departement.id">
+                        {{departement.nom}}
+                    </option>
+                </select>
+            </div>
+
+
+
+            
+            <div class="form-group">
+              <label for="">Partie Contractante</label>
+              <select name="">
+                  <option  >
+                     ALSA ALBAIDA
+                  </option>
+                  <option  >
+                      ALSA City AGADIR
+                   </option>
+                   <option  >
+                      GAT
+                   </option>
+                   <option  >
+                     IVAM
+                   </option>
+                   <option  >
+                      Alsa Khouribga
+                    </option>
+              </select>
+          </div>
+
+
+
+          <div class="form-group">
+              <label for="Fournisseur">Fournisseur</label>
+              <input type="text" ngModel name="metadonnes" class="form-control" id="metadonnes" placeholder="Founisseur" >
+          </div>
+
+            <div class="form-group">
+              <label for="id">Categorie Name</label>
+              <select name="id" #categorieSelect>
+                  <option *ngFor="let categorie of categories" [value]="categorie.id">
+                      {{categorie.nom}}
+                  </option>
+              </select>
+          </div>
+     
+
+       
+          <div class="form-group">
+            <label for="file" >Upload Fichier</label>
+            <input type="file" #fileInput class="form-control-file" id="content" required>
+          </div>
+
+          
+            <div class="modal-footer">
+                <button type="button" id="add-User-form" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button [disabled]="addForm.invalid" type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade" id="updateContratModal" tabindex="-1" role="dialog" aria-labelledby="contratEditModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="contrat">
+      <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="updateContratModalLabel">Edit contrat {{editContrat?.nom}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form #editForm="ngForm">
+        <div class="form-group">
+          <label for="name">Nom</label>
+          <input type="text" ngModel="{{editContrat?.nom}}" name="nom" class="form-control" id="nameChange" aria-describedby="emailHelp" placeholder="nom">
+        </div>
+        <input type="hidden" ngModel="{{editContrat?.id}}" name="id" class="form-control" id="id" placeholder="ID">
+        <input type="hidden" ngModel="{{editContrat?.createdBy}}" name="createdBy" class="form-control" id="createdBy" placeholder="createdBy">
+        <input type="hidden" ngModel="{{editContrat?.modifiedBy}}" name="modifiedBy" class="form-control" id="modifiedBy" placeholder="createdBy">
+        <input type="hidden" ngModel="{{editContrat?.dateCreation}}" name="dateCreation" class="form-control" id="dateCreation" placeholder="dateCreation">
+        <input type="hidden" ngModel="{{editContrat?.dateModification}}" name="dateModification" class="form-control" id="dateModification" placeholder="dateModification">
+    
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea ngModel="{{editContrat?.metadonnes}}" name="metadonnes" class="form-control" id="metadonnes" aria-describedby="emailHelp" placeholder="metadonnes">{{editContrat?.metadonnes}}</textarea>
+        </div>
+    
+
+
+        <div class="form-group">
+          <label for="departement">Département: {{ editContrat?.departement?.nom }}</label>
+          <select name="departement" [(ngModel)]="selectedDepartementId">
+             <option *ngFor="let departement of departements" [value]="departement.id">
+               {{ departement.nom }}
+             </option>
+           </select>
+           
+        </div>
+
+
+
+
+        <div class="form-group">
+          <label for="categorie">categorie: {{ editContrat?.categorie?.nom }}</label>
+          <select name="categorie" [(ngModel)]="selectedCategorieId">
+             <option *ngFor="let categorie of categories" [value]="categorie.id">
+               {{ categorie.nom }}
+             </option>
+           </select>
+           
+        </div>
+
+
+        <div class="form-group">
+          <label for="Contenu du contrat">Contenu du contrat</label>
+          <a (click)="editContrat!.id && viewContrat(editContrat!.id)" class="btn" data-placement="top" data-original-title="View Contrat">
+          <i class="far fa-eye"></i>
+          </a>
+          
+        </div>
+
+
+        <div class="form-group">
+          <label for="file" >Upload Fichier</label>
+          <input type="file" #fileInput class="form-control-file" id="content" required>
+        </div>
+
+
+    
+        <div class="modal-footer">
+          <button type="button" id="" data-dismiss="modal" class="btn btn-secondary">Close</button>
+          <button (click)="onUpdateContrat(editForm.value)" data-dismiss="modal" class="btn btn-primary">Save changes</button>
+        </div>
+        </form>
+      </div>
+      </div>
+    </div>
+    </div>
+  </div>  
+
+  
+  
+  <!-- Delete Modal -->
+  <div class="modal fade" id="deleteContratModal" tabindex="-1" role="dialog" aria-labelledby="deleteModelLabel" aria-hidden="true">
+   <div class="modal-dialog" role="contrat">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="deleteModelLabel">Delete Contrat</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body">
+            <p>Êtes-vous sûr de la suppression du département ?<b>{{deleteContrat?.nom}} </b> ?</p>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+               <button (click)="onDeleteContrat(deleteContrat?.id)" class="btn btn-danger" data-dismiss="modal">Yes</button>
+            </div>
+         </div>
+      </div>
+   </div>
+  </div>
+  
+  
+  <!-- Notification for no Contrats -->
+  <div *ngIf="contrats?.length == 0" class="col-lg-12 col-md-12 col-xl-12">
+  <div class="alert alert-info" role="alert">
+   <h4 class="alert-heading">NO ContratS!</h4>
+   <p>No Contrats were found.</p>
+  </div>
+  </div>
+  
+  

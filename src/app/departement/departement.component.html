@@ -1,0 +1,173 @@
+
+<div class="collapse navbar-collapse" id="navbarColor02"  style="margin-top: 60px;">
+   <ul class="navbar-nav mr-auto">
+     <form class="form-inline my-2 my-lg-0">
+      <span style="margin-right: 600px; margin-left: 300px;">
+       <input  type="search" (ngModelChange)="searchDepartementss(key.value)" #key="ngModel" ngModel name="key" id="searchName" class="form-control mr-sm-2" placeholder="Filtrer départements ..." required>
+      </span>
+   
+   </form>
+   </ul>
+ 
+   <ul class="navbar-nav ml-auto">
+     <li class="nav-item">
+       <button class="bbt btn btn-primary" (click)="onOpenModal(null, 'add')">Ajouter Département</button>
+     </li>
+   </ul>
+ </div>
+ 
+ 
+  <div class="container" id="main-container">
+  
+      <div class="table-responsive">
+         <table class="table">
+           <thead>
+             <tr>
+               <th> ID</th>
+            
+               <th>Nom</th>
+            
+               <th>Description</th>
+               <th colspan="2" class="text-center">Actions</th>
+             </tr>
+           </thead>
+           <tbody *ngFor="let departement of departements" >
+             <tr >
+              
+
+               <td>{{departement?.id}}</td>
+               <td>{{departement?.nom}}</td>
+               <td>{{departement?.description}}</td>
+            
+               <td>
+                 <a (click)="onOpenModal(departement, 'edit')" class="btn " data-placement="top" data-original-title="Edit">
+                   <i class="fa fa-pencil"></i> Modifier
+                 </a>
+               </td>
+               <td>
+                 <a (click)="onOpenModal(departement, 'delete')" class=" btn " data-placement="top" data-original-title="Delete">
+                   <i class="fa fa-times"></i> Supprimer
+                 </a>
+               </td>
+             </tr>
+           </tbody>
+         </table>
+       
+
+  
+
+  
+             <!-- Add User Modal -->
+  <div class="modal fade" id="addDepartementModal" tabindex="-1" role="dialog" aria-labelledby="addDepartementModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="addDepartementModalLabel">Add Departement</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body">
+            <!-- app.component.html      <div class="form-group">
+           <label for="id">Id</label>
+           <input type="text" ngModel name="departementid" class="form-control" id="departementid" placeholder="UserID" required>
+       </div> -->
+  <div class="modal-body">
+   <form #addForm="ngForm" (ngSubmit)="onAddDepartement(addForm)">
+  
+   
+  
+       <div class="form-group">
+           <label for="name">Nom</label>
+           <input type="text" ngModel name="nom" class="form-control" id="nom" placeholder="Nom" required>
+       </div>
+  
+       <div class="form-group">
+         <label for="name">Description</label>
+         <input type="area" ngModel name="description" class="form-control" id="description" placeholder="description" >
+     </div>
+  
+       <div class="modal-footer">
+           <button type="button" id="add-Departement-form" class="btn btn-secondary" data-dismiss="modal">Close</button>
+           <button [disabled]="addForm.invalid" type="submit" class="btn btn-primary">Save changes</button>
+       </div>
+   </form>
+  </div>
+  
+         </div>
+      </div>
+   </div>
+  </div>
+  <!-- Edit Modal -->
+  <div class="modal fade" id="updateDepartementModal" tabindex="-1" role="dialog" aria-labelledby="departementEditModalLabel" aria-hidden="true">
+   <div class="modal-dialog" role="document">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="updateDepartementModalLabel">Edit departement {{editDepartement?.nom}}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body">
+            <form #editForm="ngForm">
+             
+               <div class="form-group">
+                  <label for="name">nom</label>
+                  <input type="text" ngModel="{{editDepartement?.nom}}" name="nom" class="form-control" id="nameChange" aria-describedby="emailHelp" placeholder="nom">
+               </div>
+               <input type="hidden" ngModel="{{editDepartement?.id}}" name="id" class="form-control" id="id" placeholder="ID">
+
+               
+               <div class="form-group">
+                  <label for="description">description</label>
+                  <textarea  ngModel="{{editDepartement?.description}}" name="description" class="form-control" id="descriptionChange" aria-describedby="emailHelp" placeholder="description">
+
+
+                     {{editDepartement?.description}}
+                     </textarea>
+
+               </div>
+              
+            
+  
+               <div class="modal-footer">
+                  <button type="button" id="" data-dismiss="modal" class="btn btn-secondary">Close</button>
+                  <button (click)="onUpdateDepartement(editForm.value)" data-dismiss="modal" class="btn btn-primary" >Save changes</button>
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
+  </div>
+  
+  <!-- Delete Modal -->
+  <div class="modal fade" id="deleteDepartementModal" tabindex="-1" role="dialog" aria-labelledby="deleteModelLabel" aria-hidden="true">
+   <div class="modal-dialog" role="document">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="deleteModelLabel">Delete departement</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         <div class="modal-body">
+            <p>Are you sure you want to delete departement {{deleteDepartement?.nom}}?</p>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+               <button (click)="onDeleteDepartement(deleteDepartement?.id)" class="btn btn-danger" data-dismiss="modal">Yes</button>
+            </div>
+         </div>
+      </div>
+   </div>
+  </div>
+  </div>
+  
+  <!-- Notification for no departements -->
+  <div *ngIf="departements?.length == 0" class="col-lg-12 col-md-12 col-xl-12">
+  <div class="alert alert-info" role="alert">
+   <h4 class="alert-heading">NO departementS!</h4>
+   <p>No departements were found.</p>
+  </div>
+  </div>
+  
+  

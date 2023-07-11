@@ -1,0 +1,6 @@
+.long-text-input {
+    height: 150px;
+    resize: vertical;
+    white-space: pre-wrap;
+  }
+  

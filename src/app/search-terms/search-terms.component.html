@@ -1,0 +1,71 @@
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+      // Nombre de résultats
+      var nombreResultats = 42; // Remplacez par votre nombre de résultats réel
+      document.getElementById('nombre-resultats').textContent = nombreResultats;
+      
+      // Temps de recherche en secondes
+      var tempsRecherche = 3.5; // Remplacez par votre temps de recherche réel
+      document.getElementById('temps-recherche').textContent = tempsRecherche;
+  });
+</script>
+
+
+
+  <div class="row d-flex justify-content-center con"> <div class="col-md-9">
+   <div class="card p-4 mt-3">
+ 
+    <div class="search">
+      <input type="text" id="mon-input" class="form-control" placeholder="Informatique concurrence">
+    
+  
+
+      <button  routerLink="/search" routerLinkActive="active" ariaCurrentWhenActive="page" class="btn ted">Rechercher</button>
+    </div>
+<div>
+  <p> 05 résultats ( 0.2 secondes)</p>
+</div>
+    
+    
+    <div class="result">
+        <h2 class="title">Departement  <b>Informatique</b></h2>
+         <p class="description">Gère les systèmes informatiques et le développement logiciel</p>
+         <a class="url" href="#">Afficher plus de details</a>
+       
+    </div>
+
+    <div class="result">
+        <h2 class="title">Loi n° 05.20 relative à la cybersécurité</h2>
+        <i class="far fa-eye"></i> <a (click)="viewDocument()" class="btn" data-placement="top" data-original-title="View Document">
+         Visualiser document
+        </a>
+        
+   
+    </div>
+
+    <div class="result">
+      <h2 class="title">Loi No 06-99 sur la liberté des prix et de la concurrence</h2>
+      <i class="far fa-eye"></i> <a (click)="viewDocument()" class="btn" data-placement="top" data-original-title="View Document">
+        Visualiser document
+       </a>
+  </div>
+
+  <div class="result">
+    <h2 class="title">Loi n°20-13 relative au conseil de la concurrence</h2>
+    <i class="far fa-eye"></i> <a (click)="viewDocument()" class="btn" data-placement="top" data-original-title="View Document">
+      Visualiser document
+     </a>
+</div>
+<div class="result">
+  <h2 class="title">Contrat Atos</h2>
+  <i class="far fa-eye"></i> <a (click)="viewContrat()" class="btn" data-placement="top" data-original-title="View Document">
+    Visualiser document
+   </a>
+  <p><a class="url" href="#">Afficher plus de details</a></p>
+</div>
+
+
+
+    
+    <!-- Ajoutez d'autres résultats ici -->
+

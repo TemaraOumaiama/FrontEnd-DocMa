@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { UserService } from './user/user.service';
 import { HttpClientModule } from '@angular/common/http';import { FormsModule } from '@angular/forms';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, isDevMode } from '@angular/core';
 import { DepartementComponent } from './departement/departement.component';
 import { CategorieComponent } from './categorie/categorie.component';
 import { AppRoutingModule } from './app-routing.module'; // CLI imports AppRoutingModule
@@ -35,6 +35,8 @@ import { NotificationModule } from './notification.module';
 import { NotificationService } from './authentication/notification.service';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
+import { DossiertestComponent } from './dossiertest/dossiertest.component';
+import { ContratjComponent } from './contratj/contratj.component';
 
 
 
@@ -56,7 +58,9 @@ import { RegisterComponent } from './register/register.component';
     VeilleJuridiqueComponent,
     AuthenticationComponent,
     LoginComponent,
-    RegisterComponent,  
+    RegisterComponent,
+    DossiertestComponent,
+    ContratjComponent,  
   
   ],
   imports: [
@@ -68,7 +72,11 @@ import { RegisterComponent } from './register/register.component';
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    NotificationModule
+    NotificationModule,
+
+
+
+
   ],
   providers: [NotificationService,UserService,  SearchService,AuthenticationGuard, AuthenticationService, UserService,
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true } ],

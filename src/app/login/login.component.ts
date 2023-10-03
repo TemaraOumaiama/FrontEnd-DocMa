@@ -7,22 +7,27 @@ import { NotificationService } from '../authentication/notification.service';
 import { User } from '../user/user';
 import { NotificationType } from '../enum/notification-type.enum';
 import { HeaderType } from '../enum/header-type.enum';
+import { AppComponent } from '../app.component';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
   public showLoading: boolean | undefined;
   private subscriptions: Subscription[] = [];
 
-  constructor(private router: Router, private authenticationService: AuthenticationService,
-              private notificationService: NotificationService) {}
+  constructor(
+    private router: Router,
+    private authenticationService: AuthenticationService,
+    private notificationService: NotificationService,
+    private appComponent: AppComponent
+  ) {}
 
   ngOnInit(): void {
     if (this.authenticationService.isUserLoggedIn()) {
-      this.router.navigateByUrl('/user/management');
+      this.router.navigateByUrl('/homepage');
     } else {
       this.router.navigateByUrl('/login');
     }
@@ -37,32 +42,38 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.authenticationService.saveToken(tokenValue);
           if (response.body !== null) {
             this.authenticationService.addUserToLocalCache(response.body);
-            this.router.navigateByUrl('/user/management');
+            this.router.navigateByUrl('/homepage');
           } else {
             // Handle the null case
           }
           this.showLoading = false;
         },
         (errorResponse: HttpErrorResponse) => {
-          this.sendErrorNotification(NotificationType.ERROR, errorResponse.error.message);
+          this.sendErrorNotification(
+            NotificationType.ERROR,
+            errorResponse.error.message
+          );
           this.showLoading = false;
         }
       )
     );
   }
-  
-  
 
-  private sendErrorNotification(notificationType: NotificationType, message: string): void {
+  private sendErrorNotification(
+    notificationType: NotificationType,
+    message: string
+  ): void {
     if (message) {
       this.notificationService.notify(notificationType, message);
     } else {
-      this.notificationService.notify(notificationType, 'An error occurred. Please try again.');
+      this.notificationService.notify(
+        notificationType,
+        "Une erreur s'est produite. Veuillez réessayer."
+      );
     }
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
-
 }

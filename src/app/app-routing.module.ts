@@ -18,13 +18,19 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { AuthenticationGuard } from './authentication/authentication.guard';
 
-const routes: Routes=[
-  { path: 'categorie', component :CategorieComponent,canActivate: [AuthenticationGuard]},
-  { path: 'departement', component :DepartementComponent},
-  { path: 'departements/search/:searchTerm', component: DepartementComponent  },
-  { path: 'departement/hello', component: DepartementComponent  },
+const routes: Routes = [
+  {
+    path: 'categorie',
+    component: CategorieComponent,
+    canActivate: [AuthenticationGuard],
+  },
+  { path: 'departement', component: DepartementComponent },
+  { path: 'departements/search/:searchTerm', component: DepartementComponent },
+  { path: 'departement/hello', component: DepartementComponent },
   { path: 'user', component: UserComponent },
   { path: 'homepage', component: HomepageComponent },
+  { path: 'contratAdmin', component: LoginComponent },
+
   { path: 'document', component: DocumentComponent },
   { path: 'users/:userId', component: UserDetailsComponent },
   { path: 'search', component: SearchTermsComponent },
@@ -32,19 +38,19 @@ const routes: Routes=[
   { path: 'suivicontrat', component: ContratSuiviComponent },
   { path: 'dossier', component: DossierComponent },
   { path: 'veille', component: VeilleJuridiqueComponent },
-   { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'user/management', component: UserComponent, canActivate: [AuthenticationGuard] },
-  { path: '', redirectTo: '/login', pathMatch: 'full' }
+  {
+    path: 'user/management',
+    component: UserComponent,
+    canActivate: [AuthenticationGuard],
+  },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];
 
-
 @NgModule({
-  declarations: [ ],
-  imports: [
-    CommonModule,
-    RouterModule.forRoot(routes)
-  ],
-  exports: [RouterModule]
+  declarations: [],
+  imports: [CommonModule, RouterModule.forRoot(routes)],
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

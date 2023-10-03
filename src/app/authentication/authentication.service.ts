@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpResponse,
+  HttpErrorResponse,
+} from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { User } from '../user/user';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
-
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class AuthenticationService {
   public host = environment.apiBaseUrl;
   private token: string | undefined;
@@ -14,9 +17,14 @@ export class AuthenticationService {
   private jwtHelper = new JwtHelperService();
 
   constructor(private http: HttpClient) {}
+  private isLoggedIn = false;
 
   public login(user: User): Observable<HttpResponse<User>> {
-    return this.http.post<User>(`${this.host}/user/login`, user, { observe: 'response' });
+    this.isLoggedIn = true;
+    console.log('login');
+    return this.http.post<User>(`${this.host}/user/login`, user, {
+      observe: 'response',
+    });
   }
 
   public register(user: User): Observable<User> {
@@ -26,6 +34,8 @@ export class AuthenticationService {
   public logOut(): void {
     this.token = '';
     this.loggedInUsername = '';
+    this.isLoggedIn = false;
+
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     localStorage.removeItem('users');
@@ -40,40 +50,42 @@ export class AuthenticationService {
     localStorage.setItem('user', JSON.stringify(user));
   }
 
-  public getUserFromLocalCache(): User | null {
+  getIsLoggedIn(): boolean {
+    return this.isLoggedIn;
+  }
+
+  public getUserFromLocalCache(): User {
     const userString = localStorage.getItem('user');
     return userString ? JSON.parse(userString) : null; // Parse the user object if it exists, otherwise return null
   }
-  
 
   public loadToken(): void {
     const token = localStorage.getItem('token');
     this.token = token !== null ? token : ''; // Assign a default value if token is null
   }
-  
 
   public getToken(): string {
     return this.token !== undefined ? this.token : ''; // Return the token if it is not undefined, otherwise return an empty string
   }
-  
-  
 
   public isUserLoggedIn(): boolean | undefined {
     this.loadToken();
     if (this.token != null && this.token !== '') {
-      if (this.jwtHelper.decodeToken(this.token).sub != null || '') {
+      const decodedToken = this.jwtHelper.decodeToken(this.token);
+      if (decodedToken.sub !== null && decodedToken.sub !== '') {
         if (!this.jwtHelper.isTokenExpired(this.token)) {
-          this.loggedInUsername = this.jwtHelper.decodeToken(this.token).sub;
+          this.loggedInUsername = decodedToken.sub;
           return true;
+        } else {
+          // Token is expired, log out user
+          this.logOut();
+          return false;
         }
       }
-    } else {
-      this.logOut();
-      return false;
     }
-    
-    return undefined; // Add an ending return statement to handle any other case
-  }
-  
 
+    // Token is missing or invalid, log out user
+    this.logOut();
+    return false;
+  }
 }

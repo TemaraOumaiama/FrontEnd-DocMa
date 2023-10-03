@@ -1,350 +1,920 @@
-
-<div class="collapse navbar-collapse" id="navbarColor02" style="margin-top: 20px;">
-  <ul class="navbar-nav mr-auto">
-    <form class="form-inline my-2 my-lg-0">
-     <span style="margin-right: 800px;">
-      <input  type="search" (ngModelChange)="searchContratss(key.value)" #key="ngModel" ngModel name="key" 
-      id="searchName" class="form-control mr-sm-2" placeholder="Filter contrats..." required>
-     </span>
-  
-  </form>
-  </ul>
-
-  <ul class="navbar-nav ml-auto">
-    <li class="nav-item">
-      <button class="bbt btn btn-primary" (click)="onOpenModal(null, 'add')">Ajouter Contrat</button>
-    </li>
-  </ul>
-
-</div>
-
-
-   <div class="container" id="main-container" style="margin-left: 20px;">
-   
-      
-          <table class="table">
-            <thead>
-              <tr>
-                <th> ID</th>
-             
-                <th>Nom</th>
-                <th>Cree par</th>
-            
-                <th>Departement</th>
-             
-                <th>Date Debut</th>
-                <th>Date D'echance</th>
-                <th>Partie Contractante</th>
-                <th>Fournisseur</th>
-  
-                <th colspan="4" class="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody *ngFor="let contrat of contrats" >
-              <tr >
-               
-  
-                <td>{{contrat?.id}}</td>
-
-      <td>          
+<ng-container>
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <ul
+      class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
+      id="accordionSidebar"
+    >
+      <!-- Sidebar - Brand -->
+      <a
+        class="sidebar-brand d-flex align-items-center justify-content-center"
+        href="index.html"
+      >
+        <div class="sidebar-brand-icon" style="margin-top: 50px">
+          <img
+            src="./assets/LOGO1.png"
+            height="50"
+            alt="helxlo"
+            loading="lazy"
+            class="logo-image"
+          />
+        </div>
+      </a>
+      <div style="margin-top: 30px">
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0" />
+      </div>
+      <!-- Nav Item - Dashboard -->
+      <li class="nav-item">
         <a
-        routerLink="/suivicontrat" routerLinkActive="active" ariaCurrentWhenActive="page"
-          
-           >
-        {{contrat?.nom}}
-       
-          
-        </a> </td> 
-            
-                
-                <td>{{contrat?.createdBy?.nom}}</td>
-            
-          
-                <td>{{contrat?.departement?.nom}}</td>
-       
-                <td> {{contrat?.dateDebut}} </td>
-                <td> {{contrat?.dateEchance}}</td>
-                <td> {{contrat?.partieContractante}}</td>
-                <td> {{contrat?.fournisseur}} </td>
-               
-                <td>
-                  <a (click)="onOpenModal(contrat, 'edit')" class="btn " data-placement="top" data-original-title="Edit">
-                    <i class="fa fa-pencil"></i> Edit
-                  </a>
-                </td>
-                <td>
-                  <a (click)="onOpenModal(contrat, 'delete')" class=" btn " data-placement="top" data-original-title="Delete">
-                    <i class="fa fa-times"></i> Delete
-                  </a>
-                </td>
+          routerLink="/homepage"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          class="nav-link"
+        >
+          <i class="fas fa-home"></i>
+          <span>Acceuil</span></a
+        >
+      </li>
 
-                <td>
-                  <a (click)="DownloadContrat(contrat.id)" class="btn " data-placement="top" data-original-title="View Contrat">
-                    <i class="fas fa-download"></i>
-                  </a>
-                </td>
-                <td>
-                  <a (click)="viewContrat(contrat.id)" class="btn" data-placement="top" data-original-title="View Contrat">
-                    <i class="far fa-eye"></i>
-                  </a>
-                </td>
+      <!-- Divider -->
+      <hr class="sidebar-divider" />
 
-              </tr>
-            </tbody>
-          </table>
+      <!-- Heading -->
+      <li class="nav-item">
+        <a
+          routerLink="/dossier"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          class="nav-link"
+        >
+          <i class="fa-solid fa-folder"></i>
+          <span>Gestion des dossiers</span>
+        </a>
 
-
-<!-- Add Contrat Modal -->
-<div class="modal fade" id="addContratModal" tabindex="-1" role="dialog" aria-labelledby="addContratModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="contrat">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addContratModalLabel">Add Contrat</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          
-          <form #addForm="ngForm" (ngSubmit)="onAddContrat(addForm, departementSelect, categorieSelect,fileInput) " enctype="multipart/form-data">
-  
-   
-  
-            <div class="form-group">
-                <label for="name">Nom du contrat </label>
-                <input type="text" ngModel name="nom" class="form-control" id="nom" placeholder="Nom" required>
-            </div>
-       
-
-            <div class="form-group">
-              <label for="id">Reference du contrat </label>
-              <input type="text" ngModel name="id" class="form-control" id="id" placeholder="id" required>
-          </div>
-
-
-            <div class="form-group">
-                <label for="metadonnes">Description</label>
-                <input type="text" ngModel name="metadonnes" class="form-control" id="metadonnes" placeholder="metadonnes" >
-            </div>
-       
-       
-           
-       
-            <div class="form-group">
-                <label for="id">Departement Name</label>
-                <select name="id" #departementSelect>
-                    <option *ngFor="let departement of departements" [value]="departement.id">
-                        {{departement.nom}}
-                    </option>
-                </select>
-            </div>
-
-
-
-            
-            <div class="form-group">
-              <label for="">Partie Contractante</label>
-              <select name="">
-                  <option  >
-                     ALSA ALBAIDA
-                  </option>
-                  <option  >
-                      ALSA City AGADIR
-                   </option>
-                   <option  >
-                      GAT
-                   </option>
-                   <option  >
-                     IVAM
-                   </option>
-                   <option  >
-                      Alsa Khouribga
-                    </option>
-              </select>
-          </div>
-
-
-
-          <div class="form-group">
-              <label for="Fournisseur">Fournisseur</label>
-              <input type="text" ngModel name="metadonnes" class="form-control" id="metadonnes" placeholder="Founisseur" >
-          </div>
-
-            <div class="form-group">
-              <label for="id">Categorie Name</label>
-              <select name="id" #categorieSelect>
-                  <option *ngFor="let categorie of categories" [value]="categorie.id">
-                      {{categorie.nom}}
-                  </option>
-              </select>
-          </div>
-     
-
-       
-          <div class="form-group">
-            <label for="file" >Upload Fichier</label>
-            <input type="file" #fileInput class="form-control-file" id="content" required>
-          </div>
-
-          
-            <div class="modal-footer">
-                <button type="button" id="add-User-form" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button [disabled]="addForm.invalid" type="submit" class="btn btn-primary">Save changes</button>
-            </div>
-        </form>
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <div class="modal fade" id="updateContratModal" tabindex="-1" role="dialog" aria-labelledby="contratEditModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="contrat">
-      <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="updateContratModalLabel">Edit contrat {{editContrat?.nom}}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form #editForm="ngForm">
-        <div class="form-group">
-          <label for="name">Nom</label>
-          <input type="text" ngModel="{{editContrat?.nom}}" name="nom" class="form-control" id="nameChange" aria-describedby="emailHelp" placeholder="nom">
-        </div>
-        <input type="hidden" ngModel="{{editContrat?.id}}" name="id" class="form-control" id="id" placeholder="ID">
-        <input type="hidden" ngModel="{{editContrat?.createdBy}}" name="createdBy" class="form-control" id="createdBy" placeholder="createdBy">
-        <input type="hidden" ngModel="{{editContrat?.modifiedBy}}" name="modifiedBy" class="form-control" id="modifiedBy" placeholder="createdBy">
-        <input type="hidden" ngModel="{{editContrat?.dateCreation}}" name="dateCreation" class="form-control" id="dateCreation" placeholder="dateCreation">
-        <input type="hidden" ngModel="{{editContrat?.dateModification}}" name="dateModification" class="form-control" id="dateModification" placeholder="dateModification">
-    
-        <div class="form-group">
-          <label for="description">Description</label>
-          <textarea ngModel="{{editContrat?.metadonnes}}" name="metadonnes" class="form-control" id="metadonnes" aria-describedby="emailHelp" placeholder="metadonnes">{{editContrat?.metadonnes}}</textarea>
-        </div>
-    
-
-
-        <div class="form-group">
-          <label for="departement">Département: {{ editContrat?.departement?.nom }}</label>
-          <select name="departement" [(ngModel)]="selectedDepartementId">
-             <option *ngFor="let departement of departements" [value]="departement.id">
-               {{ departement.nom }}
-             </option>
-           </select>
-           
-        </div>
-
-
-
-
-        <div class="form-group">
-          <label for="categorie">categorie: {{ editContrat?.categorie?.nom }}</label>
-          <select name="categorie" [(ngModel)]="selectedCategorieId">
-             <option *ngFor="let categorie of categories" [value]="categorie.id">
-               {{ categorie.nom }}
-             </option>
-           </select>
-           
-        </div>
-
-
-        <div class="form-group">
-          <label for="Contenu du contrat">Contenu du contrat</label>
-          <a (click)="editContrat!.id && viewContrat(editContrat!.id)" class="btn" data-placement="top" data-original-title="View Contrat">
-          <i class="far fa-eye"></i>
+        <div>
+          <a
+            routerLink="/document"
+            routerLinkActive="active"
+            ariaCurrentWhenActive="page"
+            class="nav-link"
+          >
+            <i class="fa-solid fa-file"></i>
+            <span> Gestion des documents Juridiques</span>
           </a>
-          
+
+          <script>
+            document
+              .getElementById("importLink")
+              .addEventListener("click", function (event) {
+                event.preventDefault(); // Empêche le lien de rediriger vers une autre page
+
+                // Affichez vos documents récupérés ici
+                alert("Documents non lus récupérés avec succès.");
+              });
+          </script>
+          <div>
+            <a
+              routerLink="/veille"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+              class="nav-link"
+            >
+              <span> Consulter les rapport de veille juridique</span>
+            </a>
+          </div>
         </div>
+      </li>
 
+      <!-- Nav Item - Pages Collapse Menu -->
+      <li class="nav-item active">
+        <a
+          routerLink="/contrat"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          class="nav-link"
+        >
+          <i class="fa-solid fa-file-contract"></i>
+          <span>Gestion des contrats</span>
+        </a>
+      </li>
 
-        <div class="form-group">
-          <label for="file" >Upload Fichier</label>
-          <input type="file" #fileInput class="form-control-file" id="content" required>
-        </div>
-
-
-    
-        <div class="modal-footer">
-          <button type="button" id="" data-dismiss="modal" class="btn btn-secondary">Close</button>
-          <button (click)="onUpdateContrat(editForm.value)" data-dismiss="modal" class="btn btn-primary">Save changes</button>
-        </div>
-        </form>
+      <!-- Nav Item - Utilities Collapse Menu -->
+      <div [hidden]="!isAdmin">
+        <li class="nav-item">
+          <a
+            routerLink="/categorie"
+            ariaCurrentWhenActive="page"
+            class="nav-link"
+          >
+            <i class="fa-solid fa-table-cells-large"></i>
+            <span>Gestion des catégories</span>
+          </a>
+        </li>
       </div>
-      </div>
-    </div>
-    </div>
-  </div>  
 
-  
-  
-  <!-- Delete Modal -->
-  <div class="modal fade" id="deleteContratModal" tabindex="-1" role="dialog" aria-labelledby="deleteModelLabel" aria-hidden="true">
-   <div class="modal-dialog" role="contrat">
-      <div class="modal-content">
-         <div class="modal-header">
-            <h5 class="modal-title" id="deleteModelLabel">Delete Contrat</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-         </div>
-         <div class="modal-body">
-            <p>Êtes-vous sûr de la suppression du département ?<b>{{deleteContrat?.nom}} </b> ?</p>
-            <div class="modal-footer">
-               <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-               <button (click)="onDeleteContrat(deleteContrat?.id)" class="btn btn-danger" data-dismiss="modal">Yes</button>
+      <!-- Divider -->
+      <hr class="sidebar-divider" />
+
+      <!-- Heading -->
+      <div [hidden]="!isSuperAdmin">
+        <div class="sidebar-heading">Administration</div>
+        <!-- Nav Item - Charts -->
+        <li class="nav-item">
+          <a
+            routerLink="/departement"
+            routerLinkActive="active"
+            ariaCurrentWhenActive="page"
+            class="nav-link"
+          >
+            <i class="fa-solid fa-layer-group"></i>
+            <span>Gestion des départements</span>
+          </a>
+        </li>
+
+        <!-- Nav Item - Tables -->
+        <li class="nav-item">
+          <a
+            routerLink="/user/management"
+            ariaCurrentWhenActive="page"
+            class="nav-link"
+          >
+            <i class="fa-sharp fa-solid fa-user-group"></i>
+            <span>Gestion des utilisateurs</span>
+          </a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider d-none d-md-block" />
+      </div>
+      <!-- Sidebar Toggler (Sidebar) -->
+      <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      </div>
+
+      <!-- Sidebar Message -->
+    </ul>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+      <!-- Main Content -->
+      <div id="content">
+        <!-- Topbar -->
+        <nav
+          class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow"
+        >
+          <!-- Sidebar Toggle (Topbar) -->
+          <button
+            id="sidebarToggleTop"
+            class="btn btn-link d-md-none rounded-circle mr-3"
+          >
+            <i class="fa fa-bars"></i>
+          </button>
+
+          <!-- Topbar Search -->
+
+          <!-- Topbar Navbar -->
+          <ul class="navbar-nav ml-auto">
+            <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+            <li class="nav-item dropdown no-arrow d-sm-none">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="searchDropdown"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <i class="fas fa-search fa-fw"></i>
+              </a>
+              <!-- Dropdown - Messages -->
+              <div
+                class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                aria-labelledby="searchDropdown"
+              >
+                <form class="form-inline mr-auto w-100 navbar-search">
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control bg-light border-0 small"
+                      placeholder="Search for..."
+                      aria-label="Search"
+                      aria-describedby="basic-addon2"
+                    />
+                    <div class="input-group-append">
+                      <button class="btn btn-primary" type="button">
+                        <i class="fas fa-search fa-sm"></i>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </li>
+
+            <!-- Nav Item - Alerts -->
+            <li class="nav-item dropdown no-arrow mx-1">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="alertsDropdown"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <i class="fas fa-bell fa-fw"></i>
+                <!-- Counter - Alerts -->
+                <span class="badge badge-danger badge-counter">3+</span>
+              </a>
+              <!-- Dropdown - Alerts -->
+              <div
+                class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                aria-labelledby="alertsDropdown"
+              >
+                <h6 class="dropdown-header">Alerts Center</h6>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                  <div class="mr-3">
+                    <div class="icon-circle bg-primary">
+                      <i class="fas fa-file-alt text-white"></i>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="small text-gray-500">December 12, 2019</div>
+                    <span class="font-weight-bold"
+                      >A new monthly report is ready to download!</span
+                    >
+                  </div>
+                </a>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                  <div class="mr-3">
+                    <div class="icon-circle bg-success">
+                      <i class="fas fa-donate text-white"></i>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="small text-gray-500">December 7, 2019</div>
+                    $290.29 has been deposited into your account!
+                  </div>
+                </a>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                  <div class="mr-3">
+                    <div class="icon-circle bg-warning">
+                      <i class="fas fa-exclamation-triangle text-white"></i>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="small text-gray-500">December 2, 2019</div>
+                    Spending Alert: We've noticed unusually high spending for
+                    your account.
+                  </div>
+                </a>
+                <a
+                  class="dropdown-item text-center small text-gray-500"
+                  href="#"
+                  >Show All Alerts</a
+                >
+              </div>
+            </li>
+
+            <!-- Nav Item - Messages -->
+            <li class="nav-item dropdown no-arrow mx-1">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="messagesDropdown"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <i class="fas fa-envelope fa-fw"></i>
+                <!-- Counter - Messages -->
+                <span class="badge badge-danger badge-counter">7</span>
+              </a>
+              <!-- Dropdown - Messages -->
+              <div
+                class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                aria-labelledby="messagesDropdown"
+              >
+                <h6 class="dropdown-header">Message Center</h6>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                  <div class="dropdown-list-image mr-3">
+                    <img
+                      class="rounded-circle"
+                      src="assets/img/undraw_profile_1.svg"
+                      alt="..."
+                    />
+                    <div class="status-indicator bg-success"></div>
+                  </div>
+                  <div class="font-weight-bold">
+                    <div class="text-truncate">
+                      Hi there! I am wondering if you can help me with a problem
+                      I've been having.
+                    </div>
+                    <div class="small text-gray-500">Emily Fowler · 58m</div>
+                  </div>
+                </a>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                  <div class="dropdown-list-image mr-3">
+                    <img
+                      class="rounded-circle"
+                      src="assets/img/undraw_profile_2.svg"
+                      alt="..."
+                    />
+                    <div class="status-indicator"></div>
+                  </div>
+                  <div>
+                    <div class="text-truncate">
+                      I have the photos that you ordered last month, how would
+                      you like them sent to you?
+                    </div>
+                    <div class="small text-gray-500">Jae Chun · 1d</div>
+                  </div>
+                </a>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                  <div class="dropdown-list-image mr-3">
+                    <img
+                      class="rounded-circle"
+                      src="assets/img/undraw_profile_3.svg"
+                      alt="..."
+                    />
+                    <div class="status-indicator bg-warning"></div>
+                  </div>
+                  <div>
+                    <div class="text-truncate">
+                      Last month's report looks great, I am very happy with the
+                      progress so far, keep up the good work!
+                    </div>
+                    <div class="small text-gray-500">Morgan Alvarez · 2d</div>
+                  </div>
+                </a>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                  <div class="dropdown-list-image mr-3">
+                    <img
+                      class="rounded-circle"
+                      src="https://source.unsplash.com/Mv9hjnEUHR4/60x60"
+                      alt="..."
+                    />
+                    <div class="status-indicator bg-success"></div>
+                  </div>
+                  <div>
+                    <div class="text-truncate">
+                      Am I a good boy? The reason I ask is because someone told
+                      me that people say this to all dogs, even if they aren't
+                      good...
+                    </div>
+                    <div class="small text-gray-500">Chicken the Dog · 2w</div>
+                  </div>
+                </a>
+                <a
+                  class="dropdown-item text-center small text-gray-500"
+                  href="#"
+                  >Read More Messages</a
+                >
+              </div>
+            </li>
+
+            <div class="topbar-divider d-none d-sm-block"></div>
+
+            <!-- Nav Item - User Information -->
+            <li class="nav-item dropdown no-arrow">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="userDropdown"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small"
+                  >{{ user.nom }} {{ user.prenom }}</span
+                >
+                <img
+                  class="img-profile rounded-circle"
+                  src="{{ user.imageUrl }}"
+                />
+              </a>
+              <!-- Dropdown - User Information -->
+              <div
+                class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                aria-labelledby="userDropdown"
+              >
+                <a class="dropdown-item" href="#">
+                  <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Profile
+                </a>
+                <a class="dropdown-item" href="#">
+                  <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Settings
+                </a>
+                <a class="dropdown-item" href="#">
+                  <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Activity Log
+                </a>
+                <div class="dropdown-divider"></div>
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  data-toggle="modal"
+                  data-target="#logoutModal"
+                >
+                  <i
+                    class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"
+                  ></i>
+                  Logout
+                </a>
+              </div>
+            </li>
+          </ul>
+        </nav>
+        <!-- End of Topbar -->
+        <div class="container-fluid">
+          <div class="tab-content mt-3" id="myTabContent">
+            <!-- user table -->
+            <div class="tab-pane fade show active" id="users">
+              <div class="mb-3 float-right">
+                <div class="btn-group mr-2">
+                  <form class="form-inline my-2 my-lg-0">
+                    <span>
+                      <input
+                        type="search"
+                        (ngModelChange)="searchContratss(key.value)"
+                        #key="ngModel"
+                        ngModel
+                        name="key"
+                        id="searchName"
+                        class="form-control mr-sm-2"
+                        placeholder="Filter contrats..."
+                        required
+                      />
+                    </span>
+                  </form>
+
+                  <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                      <button
+                        class="bbt btn btn-primary"
+                        (click)="onOpenModal(null, 'add')"
+                      >
+                        Ajouter Contrat
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+                <div class="btn-group">
+                  <button
+                    type="button"
+                    (click)="getCategories()"
+                    class="btn btn-info"
+                  >
+                    <i *ngIf="refreshing" class="fas fa-sync fa-spin"></i
+                    ><i *ngIf="!refreshing" class="fas fa-sync"></i>
+                  </button>
+                </div>
+              </div>
+              <table class="table table-hover" id="main-container">
+                <thead class="table-borderless">
+                  <tr class="text-center">
+                    <th class="thtype">ID</th>
+
+                    <th class="thtype">Type</th>
+                    <th class="thtype">Créé par</th>
+
+                    <th class="thtype">Departement</th>
+                    <th class="thtype">Partie Contractante</th>
+                    <th class="thtype">Fournisseur/Prestatatire</th>
+                    <th class="thtype">Date Debut</th>
+                    <th class="thtype">Date D'echance</th>
+                    <th class="thtype">Délai de préavis</th>
+                    <th class="thtype">Statut du Contrat</th>
+                    <th colspan="3" class="thtype text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody *ngFor="let contrat of contrats">
+                  <tr [ngClass]="getContratClass(contrat)">
+                    <td>{{ contrat?.id }}</td>
+
+                    <td>
+                      <a
+                        routerLink="/suivicontrat"
+                        routerLinkActive="active"
+                        ariaCurrentWhenActive="page"
+                      >
+                        {{ contrat?.nom }}
+                      </a>
+                    </td>
+
+                    <td>
+                      {{ contrat?.createdBy?.nom }}
+                      {{ contrat?.createdBy?.prenom }}
+                    </td>
+
+                    <td>{{ contrat?.departement?.nom }}</td>
+                    <td>{{ contrat?.partieContractante }}</td>
+
+                    <td>{{ contrat?.fournisseur }}</td>
+                    <td>{{ contrat?.dateDebut | date : "dd/MM/yyyy" }}</td>
+                    <td>
+                      {{ contrat?.dateEchance | date : "dd/MM/yyyy" }}
+                    </td>
+                    <td>{{ contrat?.delaiPreavis }} j</td>
+                    <td>{{ contrat.statu }}</td>
+                    <td class="">
+                      <div class="btn-group">
+                        <button
+                          class="btn btn-outline-info"
+                          (click)="onOpenModal(contrat, 'edit')"
+                        >
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button
+                          class="btn btn-outline-danger"
+                          (click)="onOpenModal(contrat, 'delete')"
+                        >
+                          <i class="fas fa-trash"></i>
+                        </button>
+
+                        <button
+                          class="btn btn-outline-info"
+                          (click)="viewContrat(contrat.id)"
+                        >
+                          <i class="far fa-eye"></i>
+                        </button>
+                        <button
+                          class="btn btn-outline-info"
+                          (click)="DownloadContrat(contrat.id)"
+                        >
+                          <i class="fa fa-download"> </i>
+                        </button>
+                      </div>
+                    </td>
+
+                    <td class="" [hidden]="isAdmin">
+                      <button class="btn btn-secondary btn-group" type="button">
+                        signaler un problème
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Add Contrat Modal -->
+              <div
+                class="modal fade"
+                id="addContratModal"
+                tabindex="-1"
+                role="dialog"
+                aria-labelledby="addContratModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog" role="contrat">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="addContratModalLabel">
+                        Add Contrat
+                      </h5>
+                      <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form
+                        #addForm="ngForm"
+                        (ngSubmit)="
+                          onAddContrat(
+                            addForm,
+
+                            fileInput
+                          )
+                        "
+                        enctype="multipart/form-data"
+                      >
+                        <div class="form-group">
+                          <label for="name">Type du contrat </label>
+                          <input
+                            type="text"
+                            ngModel
+                            name="nom"
+                            class="form-control"
+                            id="nom"
+                            placeholder="Nom"
+                            required
+                          />
+                        </div>
+
+                        <div class="form-group">
+                          <label for="id">Nom du departement</label>
+                          <select name="id" #departementSelect>
+                            <option
+                              *ngFor="let departement of departements"
+                              [value]="departement.id"
+                            >
+                              {{ departement.nom }}
+                            </option>
+                          </select>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="">Partie Contractante</label>
+                          <select name="">
+                            <option>ALSA ALBAIDA</option>
+                            <option>ALSA City AGADIR</option>
+                            <option>GAT</option>
+                            <option>IVAM</option>
+                            <option>Alsa Khouribga</option>
+                          </select>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="Fournisseur/Prestatatire"
+                            >Fournisseur/Prestatatire</label
+                          >
+                          <input
+                            type="text"
+                            ngModel
+                            name="metadonnes"
+                            class="form-control"
+                            id="metadonnes"
+                            placeholder="Founisseur"
+                          />
+                        </div>
+
+                        <div class="form-group">
+                          <label for="file">Upload Fichier</label>
+                          <input
+                            type="file"
+                            #fileInput
+                            class="form-control-file"
+                            id="content"
+                            required
+                          />
+                        </div>
+
+                        <div class="modal-footer">
+                          <button
+                            type="button"
+                            id="add-User-form"
+                            class="btn btn-secondary"
+                            data-dismiss="modal"
+                          >
+                            Close
+                          </button>
+                          <button
+                            [disabled]="addForm.invalid"
+                            type="submit"
+                            class="btn btn-primary"
+                          >
+                            Save changes
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="modal fade"
+                id="updateContratModal"
+                tabindex="-1"
+                role="dialog"
+                aria-labelledby="contratEditModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog" role="contrat">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="updateContratModalLabel">
+                        Edit contrat: <b>{{ editContrat?.nom }}</b>
+                      </h5>
+                      <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <form #editForm="ngForm">
+                        <div class="form-group">
+                          <label for="name">Nom</label>
+                          <input
+                            type="text"
+                            ngModel="{{ editContrat?.nom }}"
+                            name="nom"
+                            class="form-control"
+                            id="nameChange"
+                            aria-describedby="emailHelp"
+                            placeholder="nom"
+                          />
+                        </div>
+                        <input
+                          type="hidden"
+                          ngModel="{{ editContrat?.id }}"
+                          name="id"
+                          class="form-control"
+                          id="id"
+                          placeholder="ID"
+                        />
+                        <input
+                          type="hidden"
+                          ngModel="{{ editContrat?.createdBy }}"
+                          name="createdBy"
+                          class="form-control"
+                          id="createdBy"
+                          placeholder="createdBy"
+                        />
+                        <input
+                          type="hidden"
+                          ngModel="{{ editContrat?.modifiedBy }}"
+                          name="modifiedBy"
+                          class="form-control"
+                          id="modifiedBy"
+                          placeholder="createdBy"
+                        />
+                        <input
+                          type="hidden"
+                          ngModel="{{ editContrat?.dateCreation }}"
+                          name="dateCreation"
+                          class="form-control"
+                          id="dateCreation"
+                          placeholder="dateCreation"
+                        />
+                        <input
+                          type="hidden"
+                          ngModel="{{ editContrat?.dateModification }}"
+                          name="dateModification"
+                          class="form-control"
+                          id="dateModification"
+                          placeholder="dateModification"
+                        />
+
+                        <div class="form-group">
+                          <label for="departement"
+                            >Département:
+                            {{ editContrat?.departement?.nom }}</label
+                          >
+                          <select
+                            name="departement"
+                            [(ngModel)]="selectedDepartementId"
+                          >
+                            <option
+                              *ngFor="let departement of departements"
+                              [value]="departement.id"
+                            >
+                              {{ departement.nom }}
+                            </option>
+                          </select>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="Contenu du contrat"
+                            >Contenu du contrat</label
+                          >
+                          <a
+                            (click)="
+                              editContrat!.id && viewContrat(editContrat!.id)
+                            "
+                            class="btn"
+                            data-placement="top"
+                            data-original-title="View Contrat"
+                          >
+                            <i class="far fa-eye"></i>
+                          </a>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="inlineCheckbox1"
+                            value="option1"
+                          />
+                          <label class="form-check-label" for="inlineCheckbox1"
+                            >Signer par fournisseur</label
+                          >
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="inlineCheckbox2"
+                            value="option2"
+                          />
+                          <label class="form-check-label" for="inlineCheckbox2"
+                            >Signer par partie Contractante</label
+                          >
+                        </div>
+
+                        <div class="form-group">
+                          <label for="file">Importer Fichier</label>
+                          <input
+                            type="file"
+                            #fileInput
+                            class="form-control-file"
+                            id="content"
+                            required
+                          />
+                        </div>
+
+                        <div class="modal-footer">
+                          <button
+                            type="button"
+                            id=""
+                            data-dismiss="modal"
+                            class="btn btn-secondary"
+                          >
+                            Close
+                          </button>
+                          <button
+                            (click)="onUpdateContrat(editForm.value)"
+                            data-dismiss="modal"
+                            class="btn btn-primary"
+                          >
+                            Save changes
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-         </div>
+
+            <!-- Delete Modal -->
+            <div
+              class="modal fade"
+              id="deleteContratModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="deleteModelLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog" role="contrat">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModelLabel">
+                      Delete Contrat
+                    </h5>
+                    <button
+                      type="button"
+                      class="close"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <p>
+                      Êtes-vous sûr de la suppression du département ?<b
+                        >{{ deleteContrat?.nom }}
+                      </b>
+                      ?
+                    </p>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-dismiss="modal"
+                      >
+                        No
+                      </button>
+                      <button
+                        (click)="onDeleteContrat(deleteContrat?.id)"
+                        class="btn btn-danger"
+                        data-dismiss="modal"
+                      >
+                        Yes
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notification for no Contrats -->
+            <div
+              *ngIf="contrats?.length == 0"
+              class="col-lg-12 col-md-12 col-xl-12"
+            >
+              <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">NO ContratS!</h4>
+                <p>No Contrats were found.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-   </div>
+    </div>
   </div>
-  
-  
-  <!-- Notification for no Contrats -->
-  <div *ngIf="contrats?.length == 0" class="col-lg-12 col-md-12 col-xl-12">
-  <div class="alert alert-info" role="alert">
-   <h4 class="alert-heading">NO ContratS!</h4>
-   <p>No Contrats were found.</p>
-  </div>
-  </div>
-  
-  
+</ng-container>

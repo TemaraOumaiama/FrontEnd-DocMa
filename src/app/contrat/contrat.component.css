@@ -1,0 +1,40 @@
+.dropdown-item i {
+  display: inline-block;
+  font-size: 10px; /* set the width to a fixed value */
+  font-family: "Segoe UI";
+}
+.thtype {
+  font-size: 13px;
+}
+
+.red {
+  background-color: red;
+}
+
+.yellow {
+  background-color: yellow;
+}
+
+.green {
+  background-color: green;
+}
+
+.red-class {
+  background-color: red;
+  color: white;
+}
+
+.yellow-class {
+  background-color: yellow;
+  color: black;
+}
+
+.green-class {
+  background-color: green;
+  color: black;
+}
+
+.orange-class {
+  background-color: orange;
+  color: black;
+}

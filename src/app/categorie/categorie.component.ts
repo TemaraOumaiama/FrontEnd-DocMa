@@ -15,321 +15,294 @@ import { Router } from '@angular/router';
 import unidecode from 'unidecode';
 import { Departement } from '../departement/departement';
 import { DepartementService } from '../departement/departement.service';
+import { AuthenticationService } from '../authentication/authentication.service';
+import { Role } from '../enum/role.enum';
 
 @Component({
   selector: 'app-categorie',
   templateUrl: './categorie.component.html',
-  styleUrls: ['./categorie.component.css']
+  styleUrls: ['./categorie.component.css'],
 })
 export class CategorieComponent {
+  pageHtml: string = '';
 
- 
+  publicdeptNames: string[] = [];
+  public categories: Categorie[] = [];
 
+  public users: User[] = [];
+  public refreshing: boolean = false;
 
- 
+  @ViewChild('departmentSelect')
+  departmentSelect!: ElementRef<HTMLSelectElement>;
+  @ViewChild('categorieSelect') categorieSelect!: ElementRef<HTMLSelectElement>;
 
-pageHtml: string = '';
+  public editCategorie: Categorie | undefined | null;
+  public deleteCategorie: Categorie | undefined | null;
 
-
-publicdeptNames: string[] = [];
-public categories: Categorie[] = [];
-
-public users: User[] = [];
-
-@ViewChild('departmentSelect') departmentSelect!: ElementRef<HTMLSelectElement>;
-@ViewChild('categorieSelect') categorieSelect!: ElementRef<HTMLSelectElement>;
-
-
-
-public editCategorie: Categorie | undefined|null;
-public deleteCategorie: Categorie | undefined|null;
-
-constructor(private router: Router,private UserService:UserService, private CategorieService: CategorieService, private DepartementService:DepartementService ){}
-
-
-ngOnInit() {
-  this.getCategories();
-  this.getUsers();
-  this.getDepartements();
-
-}
-
-
-
-
-
-
-public selectedCategorie: Categorie | null = null; 
-
-
-clearSearchInput() {
-  this.searchTerm = '';
-  this.getCategories();
-  
-}
-
-
-
-
-public getCategories(): void {
-  this.CategorieService.getCategories().subscribe(
-    (response: Categorie[]) => {
-      this.categories = response;
-      console.log(this.categories);
-    },
-    (error: HttpErrorResponse) => {
-      alert(error.message);
+  constructor(
+    private router: Router,
+    private UserService: UserService,
+    private CategorieService: CategorieService,
+    private DepartementService: DepartementService,
+    private authenticationService: AuthenticationService
+  ) {}
+  private getUserRole(): string {
+    if (this.authenticationService) {
+      return this.authenticationService.getUserFromLocalCache()?.role || '';
     }
-  );
-}
-
-public getUsers(): void {
-  this.UserService.getUsers().subscribe(
-    (response: User[]) => {
-      this.users = response;
-      console.log(this.users);
-    },
-    (error: HttpErrorResponse) => {
-      alert(error.message);
-    }
-  );
-}
-
-
-
-
-public onAddCategorie(addForm: NgForm): void {
-  this.CategorieService.addCategorie(addForm.value).subscribe(
-    (response: Categorie) => {
-      console.log(response);
-      this.getCategories();
-      addForm.reset();
-      document.getElementById('add-Categorie-form')!.click();
-    },
-    (error: HttpErrorResponse) => {
-      alert(error.message);
-      addForm.reset();
-    }
-  );
-}
-
-
-
-
-public selectedCategorieId: number=5;
-
-public   onUpdateCategorie(Categorie: Categorie): void {
-
-  this.CategorieService.updateCategorie(Categorie).subscribe(
-    (response: Categorie) => {
-      console.log(response);
-      this.getCategories();
-    },
-    (error: any) => {
-      console.error(error);
-    }
-  );
-}
-
-
-
-
-public onDeleteCategorie(CategorieId: number|undefined): void {
-  if (CategorieId){
-    this.CategorieService.deleteCategorie(CategorieId).subscribe(
-    (response: void) => {
-      console.log(response);
-      this.getCategories();
-    },
-    (error: HttpErrorResponse) => {
-      alert(error.message);
-    }
-  );
+    return '';
   }
-  
-}
+  public user: User = new User();
+  public get isAdmin(): boolean {
+    return (
+      this.getUserRole() === Role.ADMIN ||
+      this.getUserRole() === Role.SUPER_ADMIN
+    );
+  }
 
-
-public searchTerm: string = '';
-
-
-
-
-
-
-
-filteredDepartments: Categorie[] = [];
-
-
-
-
-
-
-
-
-searchTermm: string = '';
-
-
-// Recherche Categorie
-
-
-public searchCategoriess(key: string): void {
-  console.log(key);
-  const searchTerms = key.toLowerCase().split(' ').filter(term => term !== '');
-
-  if (searchTerms.length === 0) {
+  public get isSuperAdmin(): boolean {
+    return this.getUserRole() === Role.SUPER_ADMIN;
+  }
+  ngOnInit() {
     this.getCategories();
-    return;
-  }
-
-  const results: Categorie[] = [];
-
-  for (const categorie of this.categories) {
-    let found = false;
-
-    for (const term of searchTerms) {
-      const normalizedTerm = unidecode(term);
-      const normalizedNom = unidecode(categorie.nom.toLowerCase());
-      const normalizedDescription = unidecode(categorie.description.toLowerCase());
-
-      const termFoundInNom = normalizedNom.includes(normalizedTerm);
-      const termFoundInDescription = normalizedDescription.includes(normalizedTerm);
-
-      if (termFoundInNom || termFoundInDescription) {
-        found = true;
-        break;
-      }
-    }
-
-    if (found) {
-      results.push(categorie);
-    }
-  }
-
-  this.categories = results;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-public onOpenModal(Categorie: Categorie|null, mode: string): void {
-  const container = document.getElementById('main-container');
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.style.display = 'none';
-  button.setAttribute('data-toggle', 'modal');
-  if (mode === 'add') {
-    button.setAttribute('data-target', '#addCategorieModal');
-  }
-  if (mode === 'edit') {
-    this.editCategorie = Categorie;
-    console.log('HELLLOOOOOOOOOOOOOOOOOOOOO');
-    button.setAttribute('data-target', '#updateCategorieModal');
-  }
-  if (mode === 'delete') {
-    this.deleteCategorie = Categorie;
-    button.setAttribute('data-target', '#deleteCategorieModal');
-  }
-  container?.appendChild(button);
-  button.click();
-}
-
-
-
-
-public searchItems(key: string): void {
-  console.log(key);
-  const searchTerms = key.toLowerCase().split(' ').filter(term => term !== '');
-
-  if (searchTerms.length === 0) {
+    this.getUsers();
     this.getDepartements();
+    const cachedUser = this.authenticationService.getUserFromLocalCache();
+    if (cachedUser !== null) {
+      this.user = cachedUser;
+    }
+  }
+
+  public selectedCategorie: Categorie | null = null;
+
+  clearSearchInput() {
+    this.searchTerm = '';
     this.getCategories();
-    return;
   }
 
-  const departementResults: Departement[] = [];
-  const categorieResults: Categorie[] = [];
+  public getCategories(): void {
+    this.CategorieService.getCategories().subscribe(
+      (response: Categorie[]) => {
+        this.categories = response;
+        console.log(this.categories);
+        this.refreshing = true;
+      },
+      (error: HttpErrorResponse) => {
+        //alert(error.message);
+      }
+    );
+  }
 
-  for (const departement of this.departements) {
-    let found = false;
+  public getUsers(): void {
+    this.UserService.getUsers().subscribe(
+      (response: User[]) => {
+        this.users = response;
+        console.log(this.users);
+      },
+      (error: HttpErrorResponse) => {
+        //alert(error.message);
+      }
+    );
+  }
 
-    for (const term of searchTerms) {
-      const normalizedTerm = unidecode(term);
-      const normalizedNom = unidecode(departement.nom.toLowerCase());
-      const normalizedDescription = unidecode(departement.description.toLowerCase());
+  public onAddCategorie(addForm: NgForm): void {
+    this.CategorieService.addCategorie(addForm.value).subscribe(
+      (response: Categorie) => {
+        console.log(response);
+        this.getCategories();
+        addForm.reset();
+        document.getElementById('add-Categorie-form')!.click();
+      },
+      (error: HttpErrorResponse) => {
+        //alert(error.message);
+        addForm.reset();
+      }
+    );
+  }
 
-      const termFoundInNom = normalizedNom.includes(normalizedTerm);
-      const termFoundInDescription = normalizedDescription.includes(normalizedTerm);
+  public selectedCategorieId: number = 5;
 
-      if (termFoundInNom || termFoundInDescription) {
-        found = true;
-        break;
+  public onUpdateCategorie(Categorie: Categorie): void {
+    this.CategorieService.updateCategorie(Categorie).subscribe(
+      (response: Categorie) => {
+        console.log(response);
+        this.getCategories();
+      },
+      (error: any) => {
+        console.error(error);
+      }
+    );
+  }
+
+  public onDeleteCategorie(CategorieId: number | undefined): void {
+    if (CategorieId) {
+      this.CategorieService.deleteCategorie(CategorieId).subscribe(
+        (response: void) => {
+          console.log(response);
+          this.getCategories();
+        },
+        (error: HttpErrorResponse) => {
+          //alert(error.message);
+        }
+      );
+    }
+  }
+
+  public searchTerm: string = '';
+
+  filteredDepartments: Categorie[] = [];
+
+  searchTermm: string = '';
+
+  // Recherche Categorie
+
+  public searchCategoriess(key: string): void {
+    console.log(key);
+    const searchTerms = key
+      .toLowerCase()
+      .split(' ')
+      .filter((term) => term !== '');
+
+    if (searchTerms.length === 0) {
+      this.getCategories();
+      return;
+    }
+
+    const results: Categorie[] = [];
+
+    for (const categorie of this.categories) {
+      let found = false;
+
+      for (const term of searchTerms) {
+        const normalizedTerm = unidecode(term);
+        const normalizedNom = unidecode(categorie.nom.toLowerCase());
+        const normalizedDescription = unidecode(
+          categorie.description.toLowerCase()
+        );
+
+        const termFoundInNom = normalizedNom.includes(normalizedTerm);
+        const termFoundInDescription =
+          normalizedDescription.includes(normalizedTerm);
+
+        if (termFoundInNom || termFoundInDescription) {
+          found = true;
+          break;
+        }
+      }
+
+      if (found) {
+        results.push(categorie);
       }
     }
 
-    if (found) {
-      departementResults.push(departement);
-    }
+    this.categories = results;
   }
 
-  for (const categorie of this.categories) {
-    let found = false;
+  public onOpenModal(Categorie: Categorie | null, mode: string): void {
+    console.log('allo');
+    const container = document.getElementById('main-container');
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.style.display = 'none';
+    button.setAttribute('data-toggle', 'modal');
+    if (mode === 'add') {
+      button.setAttribute('data-target', '#addCategorieModal');
+    }
+    if (mode === 'edit') {
+      this.editCategorie = Categorie;
+      console.log('HELLLOOOOOOOOOOOOOOOOOOOOO');
+      button.setAttribute('data-target', '#updateCategorieModal');
+    }
+    if (mode === 'delete') {
+      this.deleteCategorie = Categorie;
+      button.setAttribute('data-target', '#deleteCategorieModal');
+    }
+    container?.appendChild(button);
+    button.click();
+  }
 
-    for (const term of searchTerms) {
-      const normalizedTerm = unidecode(term);
-      const normalizedNom = unidecode(categorie.nom.toLowerCase());
-      const normalizedDescription = unidecode(categorie.description.toLowerCase());
+  public searchItems(key: string): void {
+    console.log(key);
+    const searchTerms = key
+      .toLowerCase()
+      .split(' ')
+      .filter((term) => term !== '');
 
-      const termFoundInNom = normalizedNom.includes(normalizedTerm);
-      const termFoundInDescription = normalizedDescription.includes(normalizedTerm);
+    if (searchTerms.length === 0) {
+      this.getDepartements();
+      this.getCategories();
+      return;
+    }
 
-      if (termFoundInNom || termFoundInDescription) {
-        found = true;
-        break;
+    const departementResults: Departement[] = [];
+    const categorieResults: Categorie[] = [];
+
+    for (const departement of this.departements) {
+      let found = false;
+
+      for (const term of searchTerms) {
+        const normalizedTerm = unidecode(term);
+        const normalizedNom = unidecode(departement.nom.toLowerCase());
+        const normalizedDescription = unidecode(
+          departement.description.toLowerCase()
+        );
+
+        const termFoundInNom = normalizedNom.includes(normalizedTerm);
+        const termFoundInDescription =
+          normalizedDescription.includes(normalizedTerm);
+
+        if (termFoundInNom || termFoundInDescription) {
+          found = true;
+          break;
+        }
+      }
+
+      if (found) {
+        departementResults.push(departement);
       }
     }
-    if (found) {
-      categorieResults.push(categorie);
+
+    for (const categorie of this.categories) {
+      let found = false;
+
+      for (const term of searchTerms) {
+        const normalizedTerm = unidecode(term);
+        const normalizedNom = unidecode(categorie.nom.toLowerCase());
+        const normalizedDescription = unidecode(
+          categorie.description.toLowerCase()
+        );
+
+        const termFoundInNom = normalizedNom.includes(normalizedTerm);
+        const termFoundInDescription =
+          normalizedDescription.includes(normalizedTerm);
+
+        if (termFoundInNom || termFoundInDescription) {
+          found = true;
+          break;
+        }
+      }
+      if (found) {
+        categorieResults.push(categorie);
+      }
     }
+
+    this.departements = departementResults;
+    this.categories = categorieResults;
   }
 
-  this.departements = departementResults;
-  this.categories = categorieResults;
-}
-
-
-
-
-public departements: Departement[] = [];
-public getDepartements(): void {
-  this.DepartementService.getDepartements().subscribe(
-    (response: Departement[]) => {
-      this.departements = response;
-      console.log(this.departements);
-    },
-    (error: HttpErrorResponse) => {
-      alert(error.message);
-    }
-  );
-const encodedString = 'Hello%20World%21';
-const decodedString = decodeURIComponent(encodedString);
-console.log(decodedString); // Output: "Hello World!"
-
-  
-}
-
+  public departements: Departement[] = [];
+  public getDepartements(): void {
+    this.DepartementService.getDepartements().subscribe(
+      (response: Departement[]) => {
+        this.departements = response;
+        console.log(this.departements);
+      },
+      (error: HttpErrorResponse) => {
+        //alert(error.message);
+      }
+    );
+    const encodedString = 'Hello%20World%21';
+    const decodedString = decodeURIComponent(encodedString);
+    console.log(decodedString); // Output: "Hello World!"
+  }
 }

@@ -1,5 +1,4 @@
-
-import { Component } from '@angular/core';
+import { Component, AfterViewInit, Renderer2 } from '@angular/core';
 import { HostListener, OnInit, ViewChild } from '@angular/core';
 import { Categorie } from './categorie/categorie';
 import { User } from 'src/app/user/user';
@@ -16,24 +15,37 @@ import { Router } from '@angular/router';
 import unidecode from 'unidecode';
 import { Departement } from './departement/departement';
 import { DepartementService } from './departement/departement.service';
+import { AuthenticationService } from './authentication/authentication.service';
+import { AuthenticationGuard } from './authentication/authentication.guard';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
-export class AppComponent {
-
-  isLoggedIn = false;
-
+export class AppComponent implements AfterViewInit {
+  isSidebarVisible: boolean = true;
+  isLoggedIn: boolean;
+  ngAfterViewInit() {
+    const script = this.renderer.createElement('script');
+    script.src = './assets/script.js';
+    this.renderer.appendChild(document.body, script);
+  }
   login() {
-    this.isLoggedIn = true;
+    console.log('login');
+    //  this.isLoggedIn = true;
   }
 
   logout() {
-    this.isLoggedIn = false;
+    // this.isLoggedIn = false;
   }
 
+  toggleSidebar() {
+    console.log('1- Toggle button clicked! 1' + this.isSidebarVisible);
+
+    this.isSidebarVisible = !this.isSidebarVisible;
+    console.log('2- Toggle button clicked!' + this.isSidebarVisible);
+  }
 
   refreshPage() {
     // Rafraîchir la page
@@ -42,57 +54,63 @@ export class AppComponent {
     alert('Documents non lus récupérés avec succès.');
   }
 
-
-
-
-
-
-
-
-
   pageHtml: string = '';
-
 
   publicdeptNames: string[] = [];
   public categories: Categorie[] = [];
-  
+
   public users: User[] = [];
-  
-  @ViewChild('departmentSelect') departmentSelect!: ElementRef<HTMLSelectElement>;
+
+  @ViewChild('departmentSelect')
+  departmentSelect!: ElementRef<HTMLSelectElement>;
   @ViewChild('categorieSelect') categorieSelect!: ElementRef<HTMLSelectElement>;
-  
-  
-  
-  public editCategorie: Categorie | undefined|null;
-  public deleteCategorie: Categorie | undefined|null;
-  
-  constructor(private router: Router,private UserService:UserService, private CategorieService: CategorieService, private DepartementService:DepartementService ){}
-  
-  
+
+  public editCategorie: Categorie | undefined | null;
+  public deleteCategorie: Categorie | undefined | null;
+  public user: User = new User();
+  private isPageRefreshed: number = 0;
+
+  constructor(
+    private router: Router,
+    private UserService: UserService,
+    private CategorieService: CategorieService,
+    private DepartementService: DepartementService,
+    private authenticationService: AuthenticationService,
+    private renderer: Renderer2,
+    private authenticationGuard: AuthenticationGuard
+  ) {
+    this.isLoggedIn = this.authenticationGuard.isUserLoggedIn();
+
+    console.log('ana constructor isLoggedIn: ' + this.isLoggedIn);
+    while (this.isPageRefreshed < 0) {
+      this.isPageRefreshed = this.isPageRefreshed + 1;
+      console.log('ana constructor isPageRefreshed: ' + this.isPageRefreshed);
+      window.location.reload();
+    }
+  }
+
   ngOnInit() {
+    console.log('HABIBI ' + this.isLoggedIn);
+
     this.getCategories();
     this.getUsers();
     this.getDepartements();
-  
+    const cachedUser = this.authenticationService.getUserFromLocalCache();
+    if (cachedUser !== null) {
+      this.user = cachedUser;
+    }
+    this.isLoggedIn = this.authenticationGuard.isUserLoggedIn();
+
+    console.log('ana hna isLoggedIn: ' + this.isLoggedIn);
   }
-  
-  
-  
-  
-  
-  
-  public selectedCategorie: Categorie | null = null; 
-  
-  
+
+  public selectedCategorie: Categorie | null = null;
+
   clearSearchInput() {
     this.searchTerm = '';
     this.getCategories();
-    
   }
-  
-  
-  
-  
+
   public getCategories(): void {
     this.CategorieService.getCategories().subscribe(
       (response: Categorie[]) => {
@@ -100,11 +118,11 @@ export class AppComponent {
         console.log(this.categories);
       },
       (error: HttpErrorResponse) => {
-        alert(error.message);
+        //alert(error.message);
       }
     );
   }
-  
+
   public getUsers(): void {
     this.UserService.getUsers().subscribe(
       (response: User[]) => {
@@ -112,14 +130,11 @@ export class AppComponent {
         console.log(this.users);
       },
       (error: HttpErrorResponse) => {
-        alert(error.message);
+        //alert(error.message);
       }
     );
   }
-  
-  
-  
-  
+
   public onAddCategorie(addForm: NgForm): void {
     this.CategorieService.addCategorie(addForm.value).subscribe(
       (response: Categorie) => {
@@ -129,19 +144,15 @@ export class AppComponent {
         document.getElementById('add-Categorie-form')!.click();
       },
       (error: HttpErrorResponse) => {
-        alert(error.message);
+        //alert(error.message);
         addForm.reset();
       }
     );
   }
-  
-  
-  
-  
-  public selectedCategorieId: number=5;
-  
-  public   onUpdateCategorie(Categorie: Categorie): void {
-  
+
+  public selectedCategorieId: number = 5;
+
+  public onUpdateCategorie(Categorie: Categorie): void {
     this.CategorieService.updateCategorie(Categorie).subscribe(
       (response: Categorie) => {
         console.log(response);
@@ -152,152 +163,126 @@ export class AppComponent {
       }
     );
   }
-  
-  
-  
-  
-  public onDeleteCategorie(CategorieId: number|undefined): void {
-    if (CategorieId){
+
+  public onDeleteCategorie(CategorieId: number | undefined): void {
+    if (CategorieId) {
       this.CategorieService.deleteCategorie(CategorieId).subscribe(
-      (response: void) => {
-        console.log(response);
-        this.getCategories();
-      },
-      (error: HttpErrorResponse) => {
-        alert(error.message);
-      }
-    );
+        (response: void) => {
+          console.log(response);
+          this.getCategories();
+        },
+        (error: HttpErrorResponse) => {
+          //alert(error.message);
+        }
+      );
     }
-    
   }
-  
-  
+
   public searchTerm: string = '';
-  
-  
-  
-  
-  
-  
-  
+
   filteredDepartments: Categorie[] = [];
-  
-  
-  
-  
-  
-  
-  
-  
+
   searchTermm: string = '';
-  
-  
+
   // Recherche Categorie
-  
-  
+
   public searchCategoriess(key: string): void {
     console.log(key);
-    const searchTerms = key.toLowerCase().split(' ').filter(term => term !== '');
-  
+    const searchTerms = key
+      .toLowerCase()
+      .split(' ')
+      .filter((term) => term !== '');
+
     if (searchTerms.length === 0) {
       this.getCategories();
       return;
     }
-  
+
     const results: Categorie[] = [];
-  
+
     for (const categorie of this.categories) {
       let found = false;
-  
+
       for (const term of searchTerms) {
         const normalizedTerm = unidecode(term);
         const normalizedNom = unidecode(categorie.nom.toLowerCase());
-        const normalizedDescription = unidecode(categorie.description.toLowerCase());
-  
+        const normalizedDescription = unidecode(
+          categorie.description.toLowerCase()
+        );
+
         const termFoundInNom = normalizedNom.includes(normalizedTerm);
-        const termFoundInDescription = normalizedDescription.includes(normalizedTerm);
-  
+        const termFoundInDescription =
+          normalizedDescription.includes(normalizedTerm);
+
         if (termFoundInNom || termFoundInDescription) {
           found = true;
           break;
         }
       }
-  
+
       if (found) {
         results.push(categorie);
       }
     }
-  
+
     this.categories = results;
   }
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
   public searchItems(key: string): void {
     console.log(key);
-    const searchTerms = key.toLowerCase().split(' ').filter(term => term !== '');
-  
+    const searchTerms = key
+      .toLowerCase()
+      .split(' ')
+      .filter((term) => term !== '');
+
     if (searchTerms.length === 0) {
       this.getDepartements();
       this.getCategories();
       return;
     }
-  
+
     const departementResults: Departement[] = [];
     const categorieResults: Categorie[] = [];
-  
+
     for (const departement of this.departements) {
       let found = false;
-  
+
       for (const term of searchTerms) {
         const normalizedTerm = unidecode(term);
         const normalizedNom = unidecode(departement.nom.toLowerCase());
-        const normalizedDescription = unidecode(departement.description.toLowerCase());
-  
+        const normalizedDescription = unidecode(
+          departement.description.toLowerCase()
+        );
+
         const termFoundInNom = normalizedNom.includes(normalizedTerm);
-        const termFoundInDescription = normalizedDescription.includes(normalizedTerm);
-  
+        const termFoundInDescription =
+          normalizedDescription.includes(normalizedTerm);
+
         if (termFoundInNom || termFoundInDescription) {
           found = true;
           break;
         }
       }
-  
+
       if (found) {
         departementResults.push(departement);
       }
     }
-  
+
     for (const categorie of this.categories) {
       let found = false;
-  
+
       for (const term of searchTerms) {
         const normalizedTerm = unidecode(term);
         const normalizedNom = unidecode(categorie.nom.toLowerCase());
-        const normalizedDescription = unidecode(categorie.description.toLowerCase());
-  
+        const normalizedDescription = unidecode(
+          categorie.description.toLowerCase()
+        );
+
         const termFoundInNom = normalizedNom.includes(normalizedTerm);
-        const termFoundInDescription = normalizedDescription.includes(normalizedTerm);
-  
+        const termFoundInDescription =
+          normalizedDescription.includes(normalizedTerm);
+
         if (termFoundInNom || termFoundInDescription) {
           found = true;
           break;
@@ -307,14 +292,11 @@ export class AppComponent {
         categorieResults.push(categorie);
       }
     }
-  
+
     this.departements = departementResults;
     this.categories = categorieResults;
   }
-  
-  
-  
-  
+
   public departements: Departement[] = [];
   public getDepartements(): void {
     this.DepartementService.getDepartements().subscribe(
@@ -323,17 +305,11 @@ export class AppComponent {
         console.log(this.departements);
       },
       (error: HttpErrorResponse) => {
-        alert(error.message);
+        //alert(error.message);
       }
     );
-  const encodedString = 'Hello%20World%21';
-  const decodedString = decodeURIComponent(encodedString);
-  console.log(decodedString); // Output: "Hello World!"
-  
-    
+    const encodedString = 'Hello%20World%21';
+    const decodedString = decodeURIComponent(encodedString);
+    console.log(decodedString); // Output: "Hello World!"
   }
-
-
-  
 }
-

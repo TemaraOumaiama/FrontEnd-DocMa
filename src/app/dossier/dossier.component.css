@@ -1,7 +1,9 @@
-.test{
-
-    height: 90px;
-    width: 200px;
- 
+.test {
+  height: 90px;
+  width: 200px;
 }
 
+.custom-select {
+  /* Définissez la largeur souhaitée */
+  width: 200px; /* Par exemple, 200 pixels */
+}
